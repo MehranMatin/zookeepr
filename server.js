@@ -3,13 +3,20 @@ const path = require('path');
 const express = require('express');
 const { animals } = require('./data/animals');
 
+// look at the environment variables, in this case called PORT
+// when deploy the server will most likely have the port number in an environment variable so we check that first. If not available then run in 3001
 const PORT = process.env.PORT || 3001;
-// instantiate the server
+// instantiate the server by assigning to express method 
 const app = express();
+
+/* Middleware */
+// .use method to include middleware 
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true}));
 // parse incoming JSON data
 app.use(express.json());
+// instruct the server to make these files static resources
+app.use(express.static('public'));
 
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
@@ -54,7 +61,9 @@ function createNewAnimal(body, animalsArray) {
     const animal = body;
     animalsArray.push(animal);
     fs.writeFileSync(
+        // path to write to
         path.join(__dirname, './data/animals.json'),
+        // data for file
         JSON.stringify({ animals: animalsArray }, null, 2)
     );
 
@@ -79,6 +88,7 @@ function validateAnimal(animal) {
 }
 
 /* Routes */
+/* API routes */
 app.get('/api/animals', (req, res) => {
     let results = animals;
     if (req.query) {
@@ -92,6 +102,7 @@ app.get('/api/animals/:id', (req, res) => {
     if (result) {
         res.json(result);
     } else {
+        // send to browser: 404
         res.send(404);
     }
 });
@@ -112,6 +123,27 @@ app.post('/api/animals', (req, res) => {
     res.json(animal);
 });
 
+/* front end routes */
+app.get('/', (req, res) => {
+    // method that uses fs module to locate, read, then send back to client
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+// wildcard route (any route not defined will receive the homepage as response)
+// always comes last to prevent precedence over named routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// callback function uses the console.log to tell us our server is running once we run it
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
 });

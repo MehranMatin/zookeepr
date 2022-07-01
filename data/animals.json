@@ -135,6 +135,16 @@
         "hungry"
       ],
       "id": "13"
+    },
+    {
+      "name": "Dog",
+      "species": "Golden Retriever",
+      "diet": "omnivore",
+      "personalityTraits": [
+        "loving",
+        "goofy"
+      ],
+      "id": "14"
     }
   ]
 }
