@@ -10,13 +10,13 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 /* Middleware */
-// .use method to include middleware 
+// .use method to include middleware
+// instruct the server to make these files static resources
+app.use(express.static('public'));
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true}));
 // parse incoming JSON data
 app.use(express.json());
-// instruct the server to make these files static resources
-app.use(express.static('public'));
 
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
